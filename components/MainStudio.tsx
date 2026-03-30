@@ -2,16 +2,21 @@
 
 import React, { useState, useEffect } from "react";
 import PromptSection from "./PromptSection";
-import StoryDialog from "./StoryDialog";
 import GenrePanel from "./GenrePanel";
+import LoadingScreen from "./LoadingScreen";
+import StoryPage from "./StoryPage";
 
 export default function MainStudio() {
   const [prompt, setPrompt] = useState("");
   const [placeholder, setPlaceholder] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [story, setStory] = useState<{ title: string; content: string } | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isContinuing, setIsContinuing] = useState(false);
+  const [story, setStory] = useState<{ title: string; segments: string[] } | null>(null);
+  const [isStoryOpen, setIsStoryOpen] = useState(false);
   const [selectedGenres, setSelectedGenres] = useState<string[]>(["sci-fi"]);
+  const [isHovered, setIsHovered] = useState(false);
+  // One session ID per component mount — persists across "Continue this story" calls
+  const [sessionId] = useState<string>(() => crypto.randomUUID());
 
   // Typing effect logic moved to MainStudio
   const placeholders = [
@@ -55,6 +60,8 @@ export default function MainStudio() {
     return () => clearTimeout(timerID);
   }, []);
 
+  const [error, setError] = useState<string | null>(null);
+
   const handleGenreToggle = (genreId: string) => {
     setSelectedGenres(prev => 
       prev.includes(genreId) 
@@ -65,34 +72,89 @@ export default function MainStudio() {
 
   const handleGenerate = async () => {
     if (!prompt.trim() || isLoading) return;
-    
+
     setIsLoading(true);
-    // Simulate API call with genre context
-    setTimeout(() => {
-      const genreTags = selectedGenres.length > 0 ? selectedGenres.join(" & ") : "Story";
-      const mockStory = {
-        title: `The ${genreTags} Saga`,
-        content: `In a reality where the boundaries of ${genreTags} were blurred, ${prompt}. \n\nThe world was a masterpiece of ${selectedGenres[0] || 'imagination'}, woven with threads of deep narrative. Every action echoed through the halls of history, driven by ${prompt.substring(0, 30)}... \n\nAs the final chapter of this ${genreTags} epic closed, the weight of the story remained, a testament to the power of pure creation.`
-      };
-      
-      setStory(mockStory);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Session-ID": sessionId,
+        },
+        body: JSON.stringify({ prompt, genres: selectedGenres }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to generate story.");
+      }
+
+      // Derive a friendly title from the prompt
+      const genrePart = selectedGenres.length > 0
+        ? selectedGenres.map(g => g.charAt(0).toUpperCase() + g.slice(1)).join(" & ")
+        : "Story";
+      const truncatedPrompt = prompt.length > 40 ? prompt.substring(0, 40) + "..." : prompt;
+
+      setStory({
+        title: `${genrePart}: ${truncatedPrompt}`,
+        segments: [data.content],
+      });
+      setIsStoryOpen(true);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Something went wrong.";
+      setError(message);
+    } finally {
       setIsLoading(false);
-      setIsDialogOpen(true);
-    }, 2800);
+    }
   };
 
-  return (
-    <main className="flex-grow flex flex-col items-center justify-center p-6 space-y-16 max-w-7xl mx-auto w-full">
-      {/* Header / Title */}
-      <div className="text-center space-y-4 animate-fade-in">
-        <h1 className="text-6xl md:text-8xl font-black tracking-tighter bg-gradient-to-b from-white via-white to-white/20 bg-clip-text text-transparent opacity-90 leading-tight uppercase">
-          AI STORY <span className="text-accent underline decoration-accent-glow underline-offset-8">STUDIO</span>
-        </h1>
-        <p className="text-xl md:text-2xl text-white/50 font-medium max-w-2xl mx-auto tracking-wide">
-          Transform your wildest prompts into immersive narrative experiences.
-        </p>
-      </div>
+  // Clear server session and reset local state for a brand-new story
+  const handleNewStory = async () => {
+    await fetch("/api/clear-session", {
+      method: "POST",
+      headers: { "X-Session-ID": sessionId },
+    }).catch(() => {}); // best-effort
+    setIsStoryOpen(false);
+    setStory(null);
+    setPrompt("");
+    setError(null);
+  };
 
+  // Continue the story using the same session (no prompt change, no genre reset)
+  const handleContinue = async (followUpPrompt: string) => {
+    if (!followUpPrompt.trim() || isContinuing) return;
+    setIsContinuing(true);
+    try {
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Session-ID": sessionId,
+        },
+        body: JSON.stringify({ prompt: followUpPrompt, genres: [] }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed.");
+      // Append new content as a new segment (shows divider in StoryPage)
+      setStory((prev) =>
+        prev
+          ? { ...prev, segments: [...prev.segments, data.content] }
+          : { title: "Continued Story", segments: [data.content] }
+      );
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Something went wrong.";
+      setError(msg);
+    } finally {
+      setIsContinuing(false);
+    }
+  };
+
+
+  return (
+    <section className="flex flex-col items-center justify-center p-6 space-y-16 max-w-7xl mx-auto w-full z-10 relative">
       {/* Main Action Area */}
       <div className="w-full flex flex-col items-center gap-12">
         {/* Step 1: Writing Box */}
@@ -113,16 +175,22 @@ export default function MainStudio() {
         <div className="flex justify-center mt-4">
           <button
             onClick={handleGenerate}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
             disabled={isLoading || !prompt.trim()}
             style={{ 
               backgroundColor: isLoading || !prompt.trim() ? '#1f2937' : 'hsl(350, 89%, 60%)',
-              boxShadow: isLoading || !prompt.trim() ? 'none' : '0 20px 48px -12px hsl(350, 89%, 60%, 0.6)'
+              boxShadow: isLoading || !prompt.trim() 
+                ? 'none' 
+                : isHovered 
+                  ? '0 0 60px rgba(244,63,94,0.6), 0 20px 48px -12px rgba(0,0,0,0.5)'
+                  : '0 20px 48px -12px hsl(350, 89%, 60%, 0.6)'
             }}
             className={`
-              relative flex items-center justify-center gap-6 px-24 py-8 rounded-full font-black text-white uppercase tracking-[0.25em] transition-all duration-300
+              relative flex items-center justify-center gap-6 px-24 py-8 rounded-sm font-black text-white uppercase tracking-[0.25em] transition-all duration-500
               ${isLoading || !prompt.trim() 
                 ? 'opacity-50 cursor-not-allowed text-gray-400' 
-                : 'hover:scale-105 active:scale-95 hover:brightness-110 shadow-2xl'}
+                : 'hover:scale-[1.03] hover:-translate-y-1 active:scale-95 hover:brightness-110 shadow-2xl'}
             `}
           >
             {isLoading ? (
@@ -140,15 +208,32 @@ export default function MainStudio() {
             )}
           </button>
         </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="text-center animate-fade-in">
+            <p className="text-red-400/80 text-sm font-medium tracking-wide border border-red-500/20 px-6 py-3 rounded-full glass">
+              ⚠️ {error}
+            </p>
+          </div>
+        )}
       </div>
 
-      {/* Interactive Story Dialog */}
-      <StoryDialog 
-        isOpen={isDialogOpen} 
-        onClose={() => setIsDialogOpen(false)} 
-        title={story?.title || ""} 
-        content={story?.content || ""}
-      />
+
+      {/* Cinematic loading overlay */}
+      {isLoading && <LoadingScreen />}
+
+      {/* Full-screen story reading page */}
+      {isStoryOpen && story && (
+        <StoryPage
+          title={story.title}
+          segments={story.segments}
+          genres={selectedGenres}
+          onNewStory={handleNewStory}
+          onContinue={handleContinue}
+          isContinuing={isContinuing}
+        />
+      )}
 
       {/* Visual background elements */}
       <div className="fixed inset-0 -z-10 pointer-events-none opacity-20">
@@ -160,7 +245,7 @@ export default function MainStudio() {
       <div className="text-white/20 text-sm font-medium tracking-widest mt-12 animate-fade-in" style={{ animationDelay: "0.8s" }}>
         POWERED BY ADVANCED GENERATIVE LLM
       </div>
-    </main>
+    </section>
   );
 }
 

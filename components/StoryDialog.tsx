@@ -5,11 +5,12 @@ import React, { useEffect } from "react";
 interface StoryDialogProps {
   isOpen: boolean;
   onClose: () => void;
+  onNewStory: () => void;
   title: string;
   content: string;
 }
 
-export default function StoryDialog({ isOpen, onClose, title, content }: StoryDialogProps) {
+export default function StoryDialog({ isOpen, onClose, onNewStory, title, content }: StoryDialogProps) {
   // Prevent body scroll when open
   useEffect(() => {
     if (isOpen) {
@@ -56,7 +57,13 @@ export default function StoryDialog({ isOpen, onClose, title, content }: StoryDi
         </div>
 
         {/* Footer Actions */}
-        <div className="p-6 bg-white/5 border-t border-white/10 flex justify-end gap-4">
+        <div className="p-6 bg-white/5 border-t border-white/10 flex justify-end gap-4 flex-wrap">
+          <button 
+            onClick={onNewStory}
+            className="px-6 py-2 rounded-full font-semibold border border-red-500/30 text-red-400/80 hover:bg-red-500/10 transition-colors"
+          >
+            ✦ New Story
+          </button>
           <button 
             onClick={onClose}
             className="px-6 py-2 rounded-full font-semibold border border-white/20 hover:bg-white/10 transition-colors"

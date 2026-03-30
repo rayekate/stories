@@ -29,7 +29,7 @@ export default function PromptSection({ onPromptChange, prompt, isLoading, place
           onChange={(e) => onPromptChange(e.target.value)}
           disabled={isLoading}
           placeholder={placeholder}
-          className="w-full bg-transparent border-none focus:ring-0 text-foreground placeholder:text-white/20 p-8 min-h-[220px] md:min-h-[240px] resize-none text-xl outline-none leading-relaxed transition-all"
+          className="w-full bg-transparent border-none focus:ring-0 text-foreground placeholder:text-white/20 p-8 min-h-[220px] md:min-h-[240px] resize-none text-xl outline-none leading-relaxed transition-all text-center"
         />
       </div>
     </div>

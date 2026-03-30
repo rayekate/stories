@@ -30,10 +30,10 @@ export default function GenrePanel({ selectedGenres, onGenreToggle }: GenrePanel
             key={genre.id}
             onClick={() => onGenreToggle(genre.id)}
             className={`
-              relative flex items-center px-10 py-5 rounded-full text-base font-black transition-all duration-500 uppercase tracking-widest
+              relative flex items-center px-12 py-5 rounded-sm text-sm font-black transition-all duration-500 uppercase tracking-widest
               ${selectedGenres.includes(genre.id) 
-                ? 'bg-accent text-white scale-110 shadow-[0_12px_32px_-8px_rgba(245,100,65,0.8)]' 
-                : 'glass text-white/30 border border-white/5 hover:text-white hover:bg-white/10 hover:border-white/20'}
+                ? 'bg-accent text-white scale-110 shadow-[0_0_40px_rgba(244,63,94,0.6)]' 
+                : 'glass text-white/30 border border-white/5 hover:text-white hover:bg-white/5 hover:border-white/10'}
             `}
           >
             <span className="">{genre.label}</span>

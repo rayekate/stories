@@ -8,8 +8,32 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "AI Story Studio | Create Magic with Words",
-  description: "Generate immersive, beautiful stories using AI with a premium studio interface.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"),
+  title: "AI Story Studio | Create Immersive Stories with AI",
+  description: "Transform your wildest prompts into immersive, cinematic narrative experiences. The premium AI-powered studio for writers, gamers, and dreamers.",
+  keywords: ["AI Story Generator", "Narrative AI", "Creative Writing tool", "AI Storyteller", "Interactive Stories"],
+  authors: [{ name: "AI Story Studio Team" }],
+  openGraph: {
+    title: "AI Story Studio | Create Immersive Stories with AI",
+    description: "Transform your wildest prompts into immersive, cinematic narrative experiences.",
+    url: "https://story-studio.ai",
+    siteName: "AI Story Studio",
+    images: [
+      {
+        url: "/og-image.png", // Assuming this exists or will be added
+        width: 1200,
+        height: 630,
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AI Story Studio | Create Immersive Stories with AI",
+    description: "Transform your wildest prompts into immersive, cinematic narrative experiences.",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({
