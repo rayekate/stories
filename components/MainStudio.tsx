@@ -1,10 +1,24 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import PromptSection from "./PromptSection";
 import GenrePanel from "./GenrePanel";
 import LoadingScreen from "./LoadingScreen";
 import StoryPage from "./StoryPage";
+
+const STORY_LENGTHS = [
+  { id: "short",  label: "Short",  desc: "~500 words", icon: "📖" },
+  { id: "medium", label: "Medium", desc: "~1000 words", icon: "📚" },
+  { id: "epic",   label: "Epic",   desc: "~2000 words", icon: "🏛️" },
+];
+
+const STORY_MOODS = [
+  { id: "dark",        label: "Dark",        color: "border-gray-700 group-hover:border-gray-500" },
+  { id: "whimsical",   label: "Whimsical",   color: "border-amber-900/40 group-hover:border-amber-500/40" },
+  { id: "suspenseful", label: "Suspenseful", color: "border-accent/30 group-hover:border-accent/60" },
+  { id: "epic",        label: "Epic",        color: "border-purple-900/40 group-hover:border-purple-500/40" },
+];
 
 export default function MainStudio() {
   const [prompt, setPrompt] = useState("");
@@ -14,16 +28,22 @@ export default function MainStudio() {
   const [story, setStory] = useState<{ title: string; segments: string[] } | null>(null);
   const [isStoryOpen, setIsStoryOpen] = useState(false);
   const [selectedGenres, setSelectedGenres] = useState<string[]>(["sci-fi"]);
+  const [selectedLength, setSelectedLength] = useState("medium");
+  const [selectedMood, setSelectedMood] = useState("suspenseful");
   const [isHovered, setIsHovered] = useState(false);
-  // One session ID per component mount — persists across "Continue this story" calls
-  const [sessionId] = useState<string>(() => crypto.randomUUID());
+  const [sessionId, setSessionId] = useState<string>("");
 
-  // Typing effect logic moved to MainStudio
+  useEffect(() => {
+    setSessionId(crypto.randomUUID());
+  }, []);
+
   const placeholders = [
     "A space explorer finds a forgotten library...",
     "A chef discovers a dragon egg in the pantry...",
     "A time traveler gets stuck in the Victorian era...",
     "A cat who secretly runs a multi-national corporation...",
+    "An archaeologist unearths a door that shouldn't exist...",
+    "A lighthouse keeper receives messages from a ship that sank 100 years ago...",
   ];
 
   useEffect(() => {
@@ -77,13 +97,14 @@ export default function MainStudio() {
     setError(null);
 
     try {
+      const enrichedPrompt = `${prompt.trim()} [Tone: ${selectedMood}, Length: ${selectedLength}]`;
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "X-Session-ID": sessionId,
         },
-        body: JSON.stringify({ prompt, genres: selectedGenres }),
+        body: JSON.stringify({ prompt: enrichedPrompt, genres: selectedGenres }),
       });
 
       const data = await res.json();
@@ -92,7 +113,6 @@ export default function MainStudio() {
         throw new Error(data.error || "Failed to generate story.");
       }
 
-      // Derive a friendly title from the prompt
       const genrePart = selectedGenres.length > 0
         ? selectedGenres.map(g => g.charAt(0).toUpperCase() + g.slice(1)).join(" & ")
         : "Story";
@@ -111,19 +131,17 @@ export default function MainStudio() {
     }
   };
 
-  // Clear server session and reset local state for a brand-new story
   const handleNewStory = async () => {
     await fetch("/api/clear-session", {
       method: "POST",
       headers: { "X-Session-ID": sessionId },
-    }).catch(() => {}); // best-effort
+    }).catch(() => {});
     setIsStoryOpen(false);
     setStory(null);
     setPrompt("");
     setError(null);
   };
 
-  // Continue the story using the same session (no prompt change, no genre reset)
   const handleContinue = async (followUpPrompt: string) => {
     if (!followUpPrompt.trim() || isContinuing) return;
     setIsContinuing(true);
@@ -138,7 +156,6 @@ export default function MainStudio() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed.");
-      // Append new content as a new segment (shows divider in StoryPage)
       setStory((prev) =>
         prev
           ? { ...prev, segments: [...prev.segments, data.content] }
@@ -152,78 +169,139 @@ export default function MainStudio() {
     }
   };
 
+  const canGenerate = prompt.trim().length > 0 && !isLoading;
 
   return (
-    <section className="flex flex-col items-center justify-center p-6 space-y-16 max-w-7xl mx-auto w-full z-10 relative">
-      {/* Main Action Area */}
-      <div className="w-full flex flex-col items-center gap-12">
-        {/* Step 1: Writing Box */}
-        <PromptSection 
-          prompt={prompt} 
-          onPromptChange={setPrompt} 
-          isLoading={isLoading} 
-          placeholder={placeholder} 
-        />
-        
-        {/* Step 2: Genre Selection (Multiple) */}
-        <GenrePanel 
-          selectedGenres={selectedGenres} 
-          onGenreToggle={handleGenreToggle} 
-        />
+    <section className="flex flex-col items-center justify-center py-12 md:py-16 px-4 md:px-8 space-y-20 max-w-5xl mx-auto w-full z-10 relative">
+      
+      {/* Step 1: Prompt */}
+      <PromptSection 
+        prompt={prompt} 
+        onPromptChange={setPrompt} 
+        isLoading={isLoading} 
+        placeholder={placeholder} 
+      />
+      
+      {/* Step 2: Genre Selection */}
+      <GenrePanel 
+        selectedGenres={selectedGenres} 
+        onGenreToggle={handleGenreToggle} 
+      />
 
-        {/* Step 3: Global Generate Button */}
-        <div className="flex justify-center mt-4">
-          <button
-            onClick={handleGenerate}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            disabled={isLoading || !prompt.trim()}
-            style={{ 
-              backgroundColor: isLoading || !prompt.trim() ? '#1f2937' : 'hsl(350, 89%, 60%)',
-              boxShadow: isLoading || !prompt.trim() 
-                ? 'none' 
-                : isHovered 
-                  ? '0 0 60px rgba(244,63,94,0.6), 0 20px 48px -12px rgba(0,0,0,0.5)'
-                  : '0 20px 48px -12px hsl(350, 89%, 60%, 0.6)'
-            }}
-            className={`
-              relative flex items-center justify-center gap-6 px-24 py-8 rounded-sm font-black text-white uppercase tracking-[0.25em] transition-all duration-500
-              ${isLoading || !prompt.trim() 
-                ? 'opacity-50 cursor-not-allowed text-gray-400' 
-                : 'hover:scale-[1.03] hover:-translate-y-1 active:scale-95 hover:brightness-110 shadow-2xl'}
-            `}
-          >
-            {isLoading ? (
-              <>
-                <span className="w-7 h-7 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                Generating...
-              </>
-            ) : (
-              <>
-                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.21 1.21 0 0 0 1.72 0L21.64 5.36a1.21 1.21 0 0 0 0-1.72Z"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/>
-                </svg>
-                Generate Story
-              </>
-            )}
-          </button>
+      {/* Step 3: Length & Mood */}
+      <div className="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
+        {/* Story Length */}
+        <div className="flex flex-col items-center gap-6">
+          <div className="flex items-center gap-3">
+            <div className="w-1.5 h-1.5 rounded-full bg-accent/60" />
+            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white/30">Story Length</span>
+          </div>
+          <div className="flex gap-3 w-full justify-center">
+            {STORY_LENGTHS.map((l) => (
+              <motion.button
+                key={l.id}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setSelectedLength(l.id)}
+                className={`flex flex-col items-center gap-1 px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 flex-1 border ${
+                  selectedLength === l.id
+                    ? 'bg-accent/10 text-accent border-accent/40 shadow-[0_0_20px_rgba(244,63,94,0.15)]'
+                    : 'glass-card text-white/30 border-white/5 hover:text-white/60'
+                }`}
+              >
+                <span className="text-lg">{l.icon}</span>
+                <span>{l.label}</span>
+                <span className="text-[8px] opacity-60">{l.desc}</span>
+              </motion.button>
+            ))}
+          </div>
         </div>
 
-        {/* Error Message */}
-        {error && (
-          <div className="text-center animate-fade-in">
-            <p className="text-red-400/80 text-sm font-medium tracking-wide border border-red-500/20 px-6 py-3 rounded-full glass">
-              ⚠️ {error}
-            </p>
+        {/* Story Mood */}
+        <div className="flex flex-col items-center gap-6">
+          <div className="flex items-center gap-3">
+            <div className="w-1.5 h-1.5 rounded-full bg-accent/60" />
+            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white/30">Story Mood</span>
           </div>
-        )}
+          <div className="flex flex-wrap gap-2 justify-center">
+            {STORY_MOODS.map((m) => (
+              <motion.button
+                key={m.id}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setSelectedMood(m.id)}
+                className={`group px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 border ${m.color} ${
+                  selectedMood === m.id
+                    ? 'bg-white/10 text-white'
+                    : 'bg-transparent text-white/30'
+                }`}
+              >
+                {m.label}
+              </motion.button>
+            ))}
+          </div>
+        </div>
       </div>
 
+      {/* Step 4: Generate Button */}
+      <div className="flex flex-col items-center gap-6">
+        <motion.button
+          onClick={handleGenerate}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          disabled={!canGenerate}
+          whileHover={canGenerate ? { scale: 1.04, y: -4 } : {}}
+          whileTap={canGenerate ? { scale: 0.97 } : {}}
+          className={`
+            relative flex items-center justify-center gap-5 px-20 md:px-28 py-7 rounded-[20px] font-black text-white uppercase tracking-[0.25em] text-sm transition-all duration-500 overflow-hidden
+            ${!canGenerate 
+              ? 'opacity-20 cursor-not-allowed bg-white/5 border border-white/10 text-white/20 grayscale' 
+              : 'shadow-[0_20px_60px_-10px_rgba(244,63,94,0.5)]'}
+          `}
+          style={{
+            background: canGenerate ? 'hsl(350, 89%, 60%)' : 'rgba(255,255,255,0.02)',
+          }}
+        >
+          {/* Shimmer Effect */}
+          {canGenerate && (
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_3s_ease_infinite] pointer-events-none" />
+          )}
+          
+          {isLoading ? (
+            <>
+              <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin shrink-0" />
+              <span>Generating Story...</span>
+            </>
+          ) : (
+            <>
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.21 1.21 0 0 0 1.72 0L21.64 5.36a1.21 1.21 0 0 0 0-1.72Z"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/>
+              </svg>
+              Generate Story
+            </>
+          )}
+        </motion.button>
 
-      {/* Cinematic loading overlay */}
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="text-center"
+            >
+              <p className="text-red-400/80 text-sm font-medium tracking-wide border border-red-500/20 px-6 py-3 rounded-2xl glass">
+                ⚠️ {error}
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Loading overlay */}
       {isLoading && <LoadingScreen />}
 
-      {/* Full-screen story reading page */}
+      {/* Full-screen story reading */}
       {isStoryOpen && story && (
         <StoryPage
           title={story.title}
@@ -235,15 +313,9 @@ export default function MainStudio() {
         />
       )}
 
-      {/* Visual background elements */}
-      <div className="fixed inset-0 -z-10 pointer-events-none opacity-20">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-accent blur-[150px] rounded-full opacity-30" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600 blur-[150px] rounded-full opacity-20" />
-      </div>
-      
       {/* Footer Text */}
-      <div className="text-white/20 text-sm font-medium tracking-widest mt-12 animate-fade-in" style={{ animationDelay: "0.8s" }}>
-        POWERED BY ADVANCED GENERATIVE LLM
+      <div className="text-white/20 text-[10px] font-black tracking-[0.4em] uppercase animate-fade-in" style={{ animationDelay: "0.8s" }}>
+        Powered by Advanced Generative LLM
       </div>
     </section>
   );

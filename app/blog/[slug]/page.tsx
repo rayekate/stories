@@ -2,8 +2,10 @@ import { connectDB } from '@/lib/mongodb'
 import Blog from '@/lib/models/Blog'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
-import { ChevronLeft } from 'lucide-react'
+import ReadingProgress from '@/components/blog/ReadingProgress'
+import RelatedPosts from '@/components/blog/RelatedPosts'
 import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -20,12 +22,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   
   if (!blog) return { title: 'Not Found' }
 
+  const title = (blog.metaTitle || blog.title) + " | AI Story Studio Blog";
+  const description = blog.metaDescription || "Read immersive stories at AI Story Studio.";
+
   return {
-    title: blog.metaTitle,
-    description: blog.metaDescription,
+    title,
+    description,
     openGraph: {
-      title: blog.metaTitle,
-      description: blog.metaDescription,
+      title,
+      description,
       type: 'article',
       url: `https://naughtytales.xyz/blog/${blog.slug}`,
     },
@@ -62,30 +67,28 @@ export default async function BlogPage({ params }: Props) {
   }
 
   return (
-    <article className="min-h-screen bg-[#050505] text-white">
+    <article className="min-h-screen bg-[#050505] text-white pt-28">
+      {/* Structured data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      
-      {/* Navigation */}
-      <nav className="border-b border-white/10 bg-[#0A0A0A]/80 backdrop-blur-md sticky top-0 z-20">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link 
-            href="/"
-            className="flex items-center gap-2 text-white/40 hover:text-accent transition-all font-bold text-sm tracking-tight"
-          >
-            <ChevronLeft size={18} />
-            BACK TO HUB
-          </Link>
-          
-          <div className="text-[10px] font-black tracking-[0.2em] text-white/20 uppercase italic">
-            NaughtyTales <span className="text-accent/40">Studio</span>
-          </div>
-        </div>
-      </nav>
+
+      {/* Live reading progress bar */}
+      <ReadingProgress />
 
       <main className="max-w-3xl mx-auto px-6 py-12 md:py-20 animate-fade-in">
+
+        {/* ── Breadcrumb nav ─────────────────────────── */}
+        <nav aria-label="Breadcrumb" className="mb-12 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-white/20">
+          <Link href="/" className="hover:text-white transition-colors">Home</Link>
+          <span>/</span>
+          <Link href="/blog" className="hover:text-accent transition-colors">Blog</Link>
+          <span>/</span>
+          <span className="text-white/40 truncate max-w-[200px]">{blog.title}</span>
+        </nav>
+
+        {/* ── Article header ─────────────────────────── */}
         <header className="mb-12 space-y-6">
           <div className="flex items-center gap-3">
              <span className="bg-accent/10 border border-accent/20 text-accent text-[10px] font-black px-3 py-1 rounded-full tracking-widest uppercase">
@@ -103,22 +106,36 @@ export default async function BlogPage({ params }: Props) {
           <div className="w-20 h-1 bg-accent rounded-full" />
         </header>
 
+        {/* ── Article body ───────────────────────────── */}
         <section 
           className="prose prose-invert max-w-none prose-headings:italic prose-headings:font-black prose-headings:tracking-tighter prose-p:text-white/70 prose-p:leading-relaxed prose-a:text-accent prose-blockquote:border-accent prose-blockquote:bg-white/5 prose-blockquote:p-6 prose-blockquote:rounded-2xl"
           dangerouslySetInnerHTML={{ __html: blog.content }} 
         />
 
-        <footer className="mt-20 pt-10 border-t border-white/10 flex flex-col items-center text-center">
-            <p className="text-white/20 text-xs font-medium max-w-sm">
-                You've just experienced a narrative from NaughtyTales. 
-                Ready to generate your own?
+        {/* ── Related posts ──────────────────────────── */}
+        <RelatedPosts currentSlug={slug} genre={blog.genre} />
+
+        {/* ── Article footer CTA ─────────────────────── */}
+        <footer className="mt-20 pt-10 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-6">
+          <Link
+            href="/blog"
+            className="flex items-center gap-2 text-white/30 hover:text-white transition-colors text-[10px] font-black uppercase tracking-widest group"
+          >
+            <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
+            All Stories
+          </Link>
+
+          <div className="flex flex-col items-center sm:items-end text-center sm:text-right gap-3">
+            <p className="text-white/20 text-xs font-medium max-w-xs">
+              Ready to generate your own immersive narrative?
             </p>
             <Link 
-                href="/"
-                className="mt-6 bg-accent hover:bg-accent-hover text-white px-8 py-4 rounded-2xl text-sm font-black shadow-lg shadow-accent/20 transition-all active:scale-[0.95]"
+                href="/#studio"
+                className="bg-accent hover:bg-accent-hover text-white px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-accent/20 transition-all active:scale-[0.95] hover:scale-105"
             >
-                GENERATE YOUR STORY
+                Generate Your Story
             </Link>
+          </div>
         </footer>
       </main>
     </article>

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -20,7 +22,7 @@ export const metadata: Metadata = {
     siteName: "AI Story Studio",
     images: [
       {
-        url: "/og-image.png", // Assuming this exists or will be added
+        url: "/og-image.png",
         width: 1200,
         height: 630,
       },
@@ -42,8 +44,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${outfit.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en" className={`${outfit.variable} h-full antialiased`} suppressHydrationWarning>
+      <body className="min-h-full flex flex-col bg-[#050505]">
+        <Navbar />
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }
