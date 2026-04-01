@@ -1,4 +1,8 @@
 import React from "react";
+import Hero from "@/components/home/Hero";
+import Features from "@/components/home/Features";
+import Testimonials from "@/components/home/Testimonials";
+import CallToAction from "@/components/home/CallToAction";
 import MainStudio from "@/components/MainStudio";
 import { FeaturedSlider } from "@/components/slider/FeaturedSlider";
 
@@ -19,33 +23,60 @@ export default async function Home() {
   const featuredStories = await getFeaturedStories();
 
   return (
-    <main className="min-h-screen flex flex-col items-center relative overflow-hidden bg-[#050505]">
-      {/* Background Studio Decoration */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none -z-10 bg-radial-at-tr from-accent-glow to-transparent opacity-20" />
-      
-      {/* Main Server Header (for SEO) */}
-      <div className="flex flex-col items-center text-center space-y-4 animate-fade-in py-12 px-6 z-10 w-full">
-        <h1 className="text-6xl md:text-8xl font-black tracking-tighter bg-gradient-to-b from-white via-white to-white/20 bg-clip-text text-transparent opacity-90 leading-tight uppercase italic">
-          AI STORY <span className="text-accent underline decoration-accent-glow underline-offset-8">STUDIO</span>
-        </h1>
-        <p className="text-xl md:text-2xl text-white/50 font-medium max-w-2xl mx-auto tracking-wide text-center uppercase italic opacity-60">
-          Transform your wildest prompts into immersive narrative experiences.
-        </p>
-      </div>
+    <main className="min-h-screen relative overflow-hidden bg-background">
+      {/* Hero Section */}
+      <Hero />
 
-      {/* Interactive UI Studio */}
-      <div className="w-full flex justify-center mb-20">
-        <MainStudio />
-      </div>
+      {/* Main Studio Section */}
+      <section id="studio" className="relative z-10 section-padding">
+        <div className="container-tight">
+          <div className="w-full mb-16 text-center space-y-4">
+            <h2 className="text-4xl md:text-6xl font-black tracking-tighter uppercase italic">
+              THE <span className="text-accent underline decoration-accent/30 underline-offset-8">STUDIO</span>
+            </h2>
+            <p className="text-white/30 font-medium uppercase tracking-[0.4em] text-[10px]">
+              Interface v3.0 // Active Generation Matrix
+            </p>
+          </div>
+          <div className="w-full flex justify-center">
+            <MainStudio />
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <Features />
+
+      {/* How It Works is now inside Features */}
       
-      {/* Featured Slider Integration */}
+      {/* Testimonials / Social Proof */}
+      <Testimonials />
+
+      {/* Trending / Stories Section */}
       {featuredStories && featuredStories.length > 0 && (
-        <FeaturedSlider stories={featuredStories} />
+        <section id="stories" className="section-padding bg-black/30 border-y border-white/5">
+          <div className="container-tight">
+            <div className="mb-20 text-center space-y-6">
+              <div className="inline-flex items-center gap-3 px-4 py-1 rounded-full border border-white/5 bg-white/5 text-[10px] font-black uppercase tracking-[0.4em] text-white/40">
+                <div className="w-1 h-1 rounded-full bg-accent" />
+                Featured Narratives
+              </div>
+              <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic leading-tight">
+                FEATURED <span className="text-white/20">NARRATIVES</span>
+              </h2>
+              <div className="w-16 h-[1px] bg-accent/40 mx-auto" />
+            </div>
+            <FeaturedSlider stories={featuredStories} />
+          </div>
+        </section>
       )}
 
+      {/* Pre-Footer CTA */}
+      <CallToAction />
+
       {/* Premium Shimmer Background Elements */}
-      <div className="fixed top-1/4 left-1/4 w-[1px] h-[30%] bg-gradient-to-b from-transparent via-white/20 to-transparent blur-[1px] pointer-events-none" />
-      <div className="fixed bottom-1/4 right-1/4 w-[1px] h-[30%] bg-gradient-to-b from-transparent via-white/20 to-transparent blur-[1px] pointer-events-none" />
+      <div className="fixed top-1/4 left-1/4 w-[1px] h-[30%] bg-gradient-to-b from-transparent via-white/5 to-transparent blur-[1px] pointer-events-none -z-10" />
+      <div className="fixed bottom-1/4 right-1/4 w-[1px] h-[30%] bg-gradient-to-b from-transparent via-white/5 to-transparent blur-[1px] pointer-events-none -z-10" />
     </main>
   );
 }

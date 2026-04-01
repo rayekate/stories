@@ -10,9 +10,14 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url)
     const publishedOnly = searchParams.get('published') === 'true'
     
-    let query = {}
+    let query: Record<string, unknown> = {}
     if (publishedOnly) {
       query = { published: true }
+      // Optional genre filter (public, no auth needed)
+      const genre = searchParams.get('genre')
+      if (genre) {
+        query = { ...query, genre }
+      }
     } else {
       // If not publishedOnly, it's an admin request. Verify session.
       const token = req.cookies.get('session')?.value
@@ -25,7 +30,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(blogs)
   } catch (error) {
     console.error('Error in GET /api/blogs:', error)
-    return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500 })
+    return NextResponse.json({ error: 'Internal Server Error', details: (error as Error).message }, { status: 500 })
   }
 }
 
