@@ -8,9 +8,9 @@ import LoadingScreen from "./LoadingScreen";
 import StoryPage from "./StoryPage";
 
 const STORY_LENGTHS = [
-  { id: "short",  label: "Short",  desc: "~500 words", icon: "📖" },
-  { id: "medium", label: "Medium", desc: "~1000 words", icon: "📚" },
-  { id: "epic",   label: "Epic",   desc: "~2000 words", icon: "🏛️" },
+  { id: "short",  label: "Brief Encounter",  desc: "~500 words", icon: "💄" },
+  { id: "medium", label: "Expansive Fantasy", desc: "~1000 words", icon: "💃" },
+  { id: "epic",   label: "Legendary Saga",   desc: "~2000 words", icon: "🏛️" },
 ];
 
 const STORY_MOODS = [
@@ -270,14 +270,14 @@ export default function MainStudio() {
           {isLoading ? (
             <>
               <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin shrink-0" />
-              <span>Generating Story...</span>
+              <span>Awakening Fantasy...</span>
             </>
           ) : (
             <>
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
                 <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.21 1.21 0 0 0 1.72 0L21.64 5.36a1.21 1.21 0 0 0 0-1.72Z"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/>
               </svg>
-              Generate Story
+              Generate Fantasy
             </>
           )}
         </motion.button>

@@ -11,15 +11,15 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"),
-  title: "AI Story Studio | Create Immersive Stories with AI",
-  description: "Transform your wildest prompts into immersive, cinematic narrative experiences. The premium AI-powered studio for writers, gamers, and dreamers.",
-  keywords: ["AI Story Generator", "Narrative AI", "Creative Writing tool", "AI Storyteller", "Interactive Stories"],
-  authors: [{ name: "AI Story Studio Team" }],
+  title: "SANCTUM AI | Unrestricted Adult Fantasy & Story Generation",
+  description: "Transform your deepest desires into unfiltered, cinematic narrative experiences. The elite AI studio for unconstrained adult imagination and dark fantasy.",
+  keywords: ["Adult AI Story Generator", "Unrestricted Fantasy AI", "Mature Creative Writing", "Sanctum AI", "Private Narratives"],
+  authors: [{ name: "Sanctum AI Team" }],
   openGraph: {
-    title: "AI Story Studio | Create Immersive Stories with AI",
-    description: "Transform your wildest prompts into immersive, cinematic narrative experiences.",
-    url: "https://story-studio.ai",
-    siteName: "AI Story Studio",
+    title: "SANCTUM AI | Unrestricted Adult Fantasy Narratives",
+    description: "Transform your deepest desires into unfiltered, cinematic narrative experiences.",
+    url: "https://naughtytales.xyz",
+    siteName: "Sanctum AI",
     images: [
       {
         url: "/og-image.png",
@@ -32,8 +32,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "AI Story Studio | Create Immersive Stories with AI",
-    description: "Transform your wildest prompts into immersive, cinematic narrative experiences.",
+    title: "SANCTUM AI | Unrestricted Adult Fantasy Narratives",
+    description: "Transform your deepest desires into unfiltered, cinematic narrative experiences.",
     images: ["/og-image.png"],
   },
 };
@@ -44,10 +44,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${outfit.variable} h-full antialiased`} suppressHydrationWarning>
-      <body className="min-h-full flex flex-col bg-[#050505]">
+    <html lang="en" className={`${outfit.variable} h-full antialiased`} suppressHydrationWarning data-scroll-behavior="smooth">
+      <body className="min-h-full flex flex-col bg-[#050505]" suppressHydrationWarning>
         <Navbar />
-        {children}
+        <div className="flex-1 pt-32">
+          {children}
+        </div>
         <Footer />
       </body>
     </html>
