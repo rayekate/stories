@@ -54,7 +54,7 @@ export default function Hero() {
             <Sparkles className="w-4 h-4 text-accent animate-pulse" />
             <div className="absolute inset-0 text-accent blur-sm animate-pulse-glow" />
           </div>
-          The Future of Interactive Storytelling
+          Unrestricted AI Fantasy & Adult Narratives
         </motion.div>
 
         {/* Cinematic Heading */}
@@ -65,7 +65,7 @@ export default function Hero() {
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
             className="text-4xl sm:text-6xl md:text-8xl lg:text-[10rem] font-black tracking-tighter italic uppercase leading-[0.85] text-white break-words"
           >
-            IMAGINE <br />
+            CRAFT <br />
             <span className="text-accent relative inline-block">
               LIMITLESS
               <motion.div 
@@ -75,7 +75,7 @@ export default function Hero() {
                 className="absolute -bottom-4 left-0 h-4 bg-accent/20 blur-xl -z-10" 
               />
             </span> <br />
-            <span className="text-white/20 select-none block sm:inline">EXPERIENCES</span>
+            <span className="text-white/20 select-none block sm:inline">DESIRES</span>
           </motion.h1>
 
           <motion.p
@@ -84,8 +84,8 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="max-w-2xl mx-auto text-lg md:text-xl text-white/40 font-medium tracking-widest uppercase italic leading-relaxed"
           >
-            Transform your wildest prompts into immersive, cinematic narrative experiences. <br className="hidden md:block" /> 
-            <span className="text-white/60">The premium AI studio for modern dreamers.</span>
+            Transform your deepest prompts into unfiltered, cinematic narrative experiences. <br className="hidden md:block" /> 
+            <span className="text-white/60">The elite AI studio for unconstrained imagination.</span>
           </motion.p>
         </div>
 
@@ -107,16 +107,7 @@ export default function Hero() {
             <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-2 transition-transform" />
           </motion.a>
           
-          <motion.button 
-            whileHover={{ scale: 1.05, y: -4 }}
-            whileTap={{ scale: 0.98 }}
-            className="flex items-center gap-6 px-12 py-7 rounded-[24px] glass border-white/10 hover:bg-white/5 transition-all group"
-          >
-            <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-accent/20 transition-all border border-white/5 group-hover:border-accent/40">
-              <Play className="w-4 h-4 fill-white group-hover:fill-accent transition-colors ml-1" />
-            </div>
-            <span className="text-xs font-black uppercase tracking-[0.3em] text-white/60 group-hover:text-white transition-colors">Watch Showcase</span>
-          </motion.button>
+
         </motion.div>
       </motion.div>
 

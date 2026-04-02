@@ -23,7 +23,7 @@ export default function CallToAction() {
           className="inline-flex items-center gap-3 px-6 py-2 rounded-full glass border-accent/20 text-[10px] font-black uppercase tracking-[0.4em] text-accent"
         >
           <Sparkles size={12} className="animate-pulse" />
-          Begin Your Story
+          Surrender to Imagination
         </motion.div>
 
         {/* Headline */}
@@ -34,9 +34,9 @@ export default function CallToAction() {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="text-6xl md:text-8xl font-black tracking-tighter uppercase italic leading-[0.85] text-white"
         >
-          YOUR NEXT STORY <br />
+          READY TO <br />
           <span className="text-accent relative">
-            STARTS WITH
+            SURRENDER?
             <motion.div
               initial={{ width: 0 }}
               whileInView={{ width: "100%" }}
@@ -45,7 +45,7 @@ export default function CallToAction() {
               className="absolute -bottom-2 left-0 h-3 bg-accent/20 blur-lg -z-10"
             />
           </span> <br />
-          <span className="text-white/20">A SINGLE PROMPT</span>
+          <span className="text-white/20 uppercase">No Filters. No Limits.</span>
         </motion.h2>
 
         {/* Sub copy */}
@@ -56,8 +56,8 @@ export default function CallToAction() {
           transition={{ delay: 0.3 }}
           className="max-w-2xl text-lg text-white/40 font-medium tracking-wider uppercase italic leading-relaxed"
         >
-          Unleash your creative potential. No boundaries. Just your imagination and our mission — 
-          <span className="text-white/60"> generating cinematic stories in seconds.</span>
+          Unleash your deepest creative potential. No boundaries. Just your imagination and our mission — 
+          <span className="text-white/60"> generating bespoke, unfiltered narratives in seconds.</span>
         </motion.p>
 
         {/* CTA Button */}
