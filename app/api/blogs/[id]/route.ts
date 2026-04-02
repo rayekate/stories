@@ -13,7 +13,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<Params
     const blog = await Blog.findById(id)
     if (!blog) return NextResponse.json({ error: 'Not Found' }, { status: 404 })
     return NextResponse.json(blog)
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   }
 }
@@ -21,7 +21,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<Params
 // PUT update blog
 export async function PUT(req: NextRequest, { params }: { params: Promise<Params> }) {
   try {
-    const token = req.cookies.get('session')?.value
+    const token = req.cookies.get('auth_token')?.value
     if (!token || !(await verifySession(token))) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -39,7 +39,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<Params
     const updatedBlog = await Blog.findByIdAndUpdate(id, data, { new: true })
     if (!updatedBlog) return NextResponse.json({ error: 'Not Found' }, { status: 404 })
     return NextResponse.json(updatedBlog)
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   }
 }
@@ -47,7 +47,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<Params
 // DELETE blog
 export async function DELETE(req: NextRequest, { params }: { params: Promise<Params> }) {
   try {
-    const token = req.cookies.get('session')?.value
+    const token = req.cookies.get('auth_token')?.value
     if (!token || !(await verifySession(token))) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -57,7 +57,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<Par
     const deletedBlog = await Blog.findByIdAndDelete(id)
     if (!deletedBlog) return NextResponse.json({ error: 'Not Found' }, { status: 404 })
     return NextResponse.json({ ok: true })
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   }
 }

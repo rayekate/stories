@@ -9,7 +9,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ authenticated: false }, { status: 200 });
     }
 
-    const decoded = verifyToken(token);
+    const decoded = await verifyToken(token);
     if (!decoded) {
       return NextResponse.json({ authenticated: false }, { status: 200 });
     }

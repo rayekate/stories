@@ -19,7 +19,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    const token = signToken({ id: user._id, role: user.role });
+    const token = await signToken({ id: user._id, role: user.role });
 
     const serialized = serialize("auth_token", token, {
       httpOnly: true,
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
         headers: { "Set-Cookie": serialized },
       }
     );
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
