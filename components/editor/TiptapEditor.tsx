@@ -1,6 +1,6 @@
 'use client'
 
-import { useEditor, EditorContent } from '@tiptap/react'
+import { useEditor, EditorContent, Editor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Heading from '@tiptap/extension-heading'
 import Link from '@tiptap/extension-link'
@@ -15,10 +15,13 @@ import {
 interface TiptapEditorProps {
   content: string
   onChange: (html: string) => void
+  themeRgb?: string
 }
 
-const MenuBar = ({ editor }: { editor: any }) => {
+const MenuBar = ({ editor, themeRgb }: { editor: Editor | null, themeRgb?: string }) => {
   if (!editor) return null
+  
+  const activeColor = themeRgb ? `rgb(${themeRgb})` : 'var(--accent)'
 
   const addLink = () => {
     const url = window.prompt('URL')
@@ -48,7 +51,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
   ]
 
   return (
-    <div className="flex flex-wrap items-center gap-1 p-2 border-b border-white/10 bg-white/5 sticky top-0 z-10 backdrop-blur-sm">
+    <div className="flex flex-wrap items-center gap-0.5 md:gap-1 p-1 md:p-2 border-b border-white/10 bg-white/5 sticky top-0 z-10 backdrop-blur-sm justify-center md:justify-start">
       {buttons.map((btn, i) => (
         btn.separator ? (
           <div key={i} className="w-[1px] h-4 bg-white/10 mx-1" />
@@ -56,9 +59,10 @@ const MenuBar = ({ editor }: { editor: any }) => {
           <button
             key={i}
             onClick={(e) => { e.preventDefault(); btn.action?.() }}
-            className={`p-1.5 rounded transition-colors ${
-              btn.active ? 'bg-accent text-white shadow-lg shadow-accent/20' : 'text-white/60 hover:bg-white/10 hover:text-white'
+            className={`p-1.5 rounded transition-all duration-300 ${
+              btn.active ? 'text-white shadow-lg' : 'text-white/60 hover:bg-white/10 hover:text-white'
             }`}
+            style={btn.active ? { backgroundColor: activeColor, boxShadow: `0 0 15px ${activeColor}44` } : {}}
           >
             {btn.icon}
           </button>
@@ -68,7 +72,9 @@ const MenuBar = ({ editor }: { editor: any }) => {
   )
 }
 
-export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
+export default function TiptapEditor({ content, onChange, themeRgb }: TiptapEditorProps) {
+  const activeColor = themeRgb ? `rgb(${themeRgb})` : 'var(--accent)'
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -84,17 +90,23 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-invert max-w-none p-4 min-h-[400px] outline-none',
+        class: 'prose prose-invert max-w-none p-4 md:p-8 min-h-[500px] outline-none font-medium text-white/80 leading-relaxed cinematic-prose',
       },
     },
   })
 
   return (
-    <div className="border border-white/10 rounded-sm overflow-hidden bg-[#0D0D0D] transition-all hover:border-white/20 focus-within:border-accent/40 focus-within:ring-1 focus-within:ring-accent/20">
-      <MenuBar editor={editor} />
+    <div 
+      className="border border-white/10 rounded-sm overflow-hidden bg-[#0D0D0D] transition-all hover:border-white/20 focus-within:ring-1 transition-all duration-500"
+      style={{ 
+        borderColor: `rgb(${themeRgb || '255,255,255'}, 0.1)`, 
+        ['--theme-color' as string]: activeColor 
+      } as React.CSSProperties}
+    >
+      <MenuBar editor={editor} themeRgb={themeRgb} />
       <EditorContent editor={editor} />
       <div className="p-2 text-xs text-white/40 border-t border-white/5 flex justify-between bg-white/5">
-        <span>{editor?.storage.characterCount.characters()} characters</span>
+        <span>{editor?.storage?.characterCount?.characters() || 0} characters</span>
         <span>HTML output active</span>
       </div>
     </div>
