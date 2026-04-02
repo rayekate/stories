@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Sparkles } from "lucide-react";
 import PromptSection from "./PromptSection";
 import GenrePanel from "./GenrePanel";
 import LoadingScreen from "./LoadingScreen";
@@ -20,6 +21,15 @@ const STORY_MOODS = [
   { id: "epic",        label: "Epic",        color: "border-purple-900/40 group-hover:border-purple-500/40" },
 ];
 
+const PLACEHOLDERS = [
+  "A space explorer finds a forgotten library...",
+  "A chef discovers a dragon egg in the pantry...",
+  "A time traveler gets stuck in the Victorian era...",
+  "A cat who secretly runs a multi-national corporation...",
+  "An archaeologist unearths a door that shouldn't exist...",
+  "A lighthouse keeper receives messages from a ship that sank 100 years ago...",
+];
+
 export default function MainStudio() {
   const [prompt, setPrompt] = useState("");
   const [placeholder, setPlaceholder] = useState("");
@@ -30,21 +40,12 @@ export default function MainStudio() {
   const [selectedGenres, setSelectedGenres] = useState<string[]>(["sci-fi"]);
   const [selectedLength, setSelectedLength] = useState("medium");
   const [selectedMood, setSelectedMood] = useState("suspenseful");
-  const [isHovered, setIsHovered] = useState(false);
   const [sessionId, setSessionId] = useState<string>("");
 
   useEffect(() => {
     setSessionId(crypto.randomUUID());
   }, []);
 
-  const placeholders = [
-    "A space explorer finds a forgotten library...",
-    "A chef discovers a dragon egg in the pantry...",
-    "A time traveler gets stuck in the Victorian era...",
-    "A cat who secretly runs a multi-national corporation...",
-    "An archaeologist unearths a door that shouldn't exist...",
-    "A lighthouse keeper receives messages from a ship that sank 100 years ago...",
-  ];
 
   useEffect(() => {
     let index = 0;
@@ -54,7 +55,7 @@ export default function MainStudio() {
     let timerID: NodeJS.Timeout;
 
     const type = () => {
-      const current = placeholders[index];
+      const current = PLACEHOLDERS[index];
       if (isDeleting) {
         setPlaceholder(current.substring(0, charIndex - 1));
         charIndex--;
@@ -70,7 +71,7 @@ export default function MainStudio() {
         typingSpeed = 1500;
       } else if (isDeleting && charIndex === 0) {
         isDeleting = false;
-        index = (index + 1) % placeholders.length;
+        index = (index + 1) % PLACEHOLDERS.length;
         typingSpeed = 300;
       }
       timerID = setTimeout(type, typingSpeed);
@@ -244,43 +245,50 @@ export default function MainStudio() {
       </div>
 
       {/* Step 4: Generate Button */}
-      <div className="flex flex-col items-center gap-6">
-        <motion.button
-          onClick={handleGenerate}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          disabled={!canGenerate}
-          whileHover={canGenerate ? { scale: 1.04, y: -4 } : {}}
-          whileTap={canGenerate ? { scale: 0.97 } : {}}
-          className={`
-            relative flex items-center justify-center gap-5 px-20 md:px-28 py-7 rounded-[20px] font-black text-white uppercase tracking-[0.25em] text-sm transition-all duration-500 overflow-hidden
-            ${!canGenerate 
-              ? 'opacity-20 cursor-not-allowed bg-white/5 border border-white/10 text-white/20 grayscale' 
-              : 'shadow-[0_20px_60px_-10px_rgba(244,63,94,0.5)]'}
-          `}
-          style={{
-            background: canGenerate ? 'hsl(350, 89%, 60%)' : 'rgba(255,255,255,0.02)',
-          }}
-        >
-          {/* Shimmer Effect */}
-          {canGenerate && (
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_3s_ease_infinite] pointer-events-none" />
-          )}
-          
-          {isLoading ? (
+      <div className="flex flex-col items-center gap-10 w-full pt-12">
+        <div className="relative group">
+          {/* Outer Orbitals / Glows */}
+          {canGenerate && !isLoading && (
             <>
-              <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin shrink-0" />
-              <span>Awakening Fantasy...</span>
-            </>
-          ) : (
-            <>
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
-                <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.21 1.21 0 0 0 1.72 0L21.64 5.36a1.21 1.21 0 0 0 0-1.72Z"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/>
-              </svg>
-              Generate Fantasy
+              <div className="absolute inset-0 bg-accent/20 blur-[100px] animate-pulse rounded-full -z-10" />
+              <div className="absolute -inset-4 border border-accent/10 rounded-[24px] scale-110 group-hover:scale-125 transition-transform duration-700 pointer-events-none" />
+              <div className="absolute -inset-8 border border-accent/5 rounded-[28px] scale-110 group-hover:scale-150 transition-all duration-1000 opacity-0 group-hover:opacity-100 pointer-events-none" />
             </>
           )}
-        </motion.button>
+
+          <motion.button
+            onClick={handleGenerate}
+            disabled={!canGenerate}
+            whileHover={canGenerate ? { scale: 1.02, y: -4 } : {}}
+            whileTap={canGenerate ? { scale: 0.98 } : {}}
+            className={`
+              relative flex items-center justify-center gap-6 px-24 md:px-32 py-8 rounded-[20px] font-black text-white uppercase tracking-[0.4em] text-xs transition-all duration-500 overflow-hidden
+              ${!canGenerate 
+                ? 'opacity-10 cursor-not-allowed bg-white/5 border border-white/5 text-white/10' 
+                : 'shadow-[0_20px_80px_-20px_rgba(244,63,94,0.6)]'}
+            `}
+            style={{
+              background: canGenerate ? 'var(--accent)' : 'rgba(255,255,255,0.02)',
+            }}
+          >
+            {/* Shimmer Effect */}
+            {canGenerate && (
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_2.5s_ease_infinite] pointer-events-none" />
+            )}
+            
+            {isLoading ? (
+              <>
+                <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin shrink-0" />
+                <span className="animate-pulse">Awakening Fantasy...</span>
+              </>
+            ) : (
+              <>
+                <Sparkles size={20} className="shrink-0 group-hover:rotate-12 transition-transform" />
+                <span>Generate Fantasy</span>
+              </>
+            )}
+          </motion.button>
+        </div>
 
         <AnimatePresence>
           {error && (

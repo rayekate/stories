@@ -3,6 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
+import Image from "next/image";
 
 const testimonials = [
   {
@@ -126,8 +127,14 @@ export default function Testimonials() {
 
               {/* Author */}
               <div className="flex items-center gap-4 pt-4 border-t border-white/5 relative z-10">
-                <div className="w-12 h-12 rounded-2xl overflow-hidden border border-white/10 bg-white/5">
-                  <img src={t.image} alt={t.name} className="w-full h-full object-cover" />
+                <div className="w-12 h-12 rounded-2xl overflow-hidden border border-white/10 bg-white/5 relative">
+                  <Image 
+                    src={t.image} 
+                    alt={t.name} 
+                    fill 
+                    className="object-cover" 
+                    unoptimized={true} 
+                  />
                 </div>
                 <div>
                   <p className="font-black text-white text-sm uppercase tracking-tight">{t.name}</p>
