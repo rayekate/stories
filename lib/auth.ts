@@ -1,21 +1,22 @@
-import { cookies } from 'next/headers'
-import { SignJWT, jwtVerify } from 'jose'
+import jwt from "jsonwebtoken";
 
-const SECRET = new TextEncoder().encode(process.env.SESSION_SECRET!)
+const JWT_SECRET = process.env.JWT_SECRET || "sanctum_secret_key_v3";
 
-export async function createSession() {
-  const token = await new SignJWT({ admin: true })
-    .setProtectedHeader({ alg: 'HS256' })
-    .setExpirationTime('7d')
-    .sign(SECRET)
-  return token
+export function signToken(payload: any) {
+  return jwt.sign(payload, JWT_SECRET, {
+    expiresIn: "7d",
+  });
 }
 
-export async function verifySession(token: string) {
+export function verifyToken(token: string) {
   try {
-    const { payload } = await jwtVerify(token, SECRET)
-    return payload
-  } catch {
-    return null
+    return jwt.verify(token, JWT_SECRET);
+  } catch (err) {
+    return null;
   }
 }
+
+// Aliases for compatibility with different parts of the app
+export const createSession = signToken;
+export const verifySession = verifyToken;
+
