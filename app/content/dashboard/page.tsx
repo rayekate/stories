@@ -60,7 +60,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-[#050505] text-white">
       {/* Header */}
-      <header className="border-b border-white/10 bg-[#0A0A0A]/80 backdrop-blur-md sticky top-0 z-20">
+      <header className="border-b border-white/10 bg-[#0A0A0A]/80 backdrop-blur-md sticky top-24 z-30">
         <div className="max-w-7xl mx-auto px-8 md:px-12 py-6 flex items-center justify-between">
           <div className="flex items-center gap-8">
             <h1 className="text-2xl font-black tracking-tighter italic uppercase">
