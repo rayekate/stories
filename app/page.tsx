@@ -32,10 +32,10 @@ export default async function Home() {
         <div className="container-tight">
           <div className="w-full mb-16 text-center space-y-4">
             <h2 className="text-4xl md:text-6xl font-black tracking-tighter uppercase italic">
-              THE <span className="text-accent underline decoration-accent/30 underline-offset-8">STUDIO</span>
+              THE <span className="text-accent underline decoration-accent/30 underline-offset-8">SANCTUM</span>
             </h2>
             <p className="text-white/30 font-medium uppercase tracking-[0.4em] text-[10px]">
-              Interface v3.0 // Active Generation Matrix
+              Interface v3.0 // Unrestricted Generation Matrix
             </p>
           </div>
           <div className="w-full flex justify-center">
@@ -44,8 +44,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Features Section */}
-      <Features />
+
 
       {/* How It Works is now inside Features */}
       

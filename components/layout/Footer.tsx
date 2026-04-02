@@ -52,16 +52,16 @@ export default function Footer() {
                 <Sparkles className="text-white w-6 h-6" />
               </div>
               <div className="flex flex-col">
-                <span className="text-2xl font-black tracking-tighter uppercase italic leading-none">
-                  AI STORY <span className="text-accent">STUDIO</span>
+                <span className="text-2xl font-black tracking-tighter uppercase italic leading-none text-white">
+                  SANCTUM <span className="text-accent underline decoration-accent/20 underline-offset-4 tracking-[0.2em]">AI</span>
                 </span>
-                <span className="text-[10px] font-bold tracking-[0.4em] text-white/20 uppercase mt-1">Creative Matrix v3.0</span>
+                <span className="text-[10px] font-bold tracking-[0.4em] text-white/20 uppercase mt-1">Unrestricted Matrix v3.0</span>
               </div>
             </Link>
             
             <p className="max-w-xs text-white/40 text-sm font-medium leading-relaxed uppercase tracking-wider italic">
-              Pioneering the future of interactive storytelling. <br />
-              <span className="text-white/20">Transform your imagination into immersive narrative experiences.</span>
+              Pioneering the future of adult storytelling. <br />
+              <span className="text-white/20">Transform your deepest desires into immersive narrative experiences.</span>
             </p>
 
             <div className="flex items-center gap-4">
@@ -110,10 +110,10 @@ export default function Footer() {
         <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex flex-col items-center md:items-start gap-2">
             <p className="text-[10px] font-black uppercase tracking-[0.6em] text-white/10">
-              © {currentYear} AI STORY STUDIO.
+              © {currentYear} SANCTUM AI.
             </p>
             <p className="text-[9px] font-bold tracking-[0.4em] text-white/5 uppercase">
-              Engineered for the NEXT generation of dreamers.
+              Engineered for the NEXT generation of fantasies.
             </p>
           </div>
 

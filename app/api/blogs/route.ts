@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
       }
     } else {
       // If not publishedOnly, it's an admin request. Verify session.
-      const token = req.cookies.get('session')?.value
+      const token = req.cookies.get('auth_token')?.value
       if (!token || !(await verifySession(token))) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
       }
@@ -37,10 +37,11 @@ export async function GET(req: NextRequest) {
 // POST create blog
 export async function POST(req: NextRequest) {
   try {
-    const token = req.cookies.get('session')?.value
+    const token = req.cookies.get('auth_token')?.value
     if (!token || !(await verifySession(token))) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
 
     await connectDB()
     const data = await req.json()
