@@ -4,7 +4,7 @@ import User from "@/lib/models/User";
 import { signToken } from "../../../../lib/auth";
 import { serialize } from "cookie";
 
-export async function POST(req: Request) {
+export async function POST(req: Request): Promise<NextResponse> {
   try {
     await connectDB();
     const { email, password } = await req.json();
@@ -36,7 +36,8 @@ export async function POST(req: Request) {
         headers: { "Set-Cookie": serialized },
       }
     );
-  } catch (_error) {
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Internal Server Error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
