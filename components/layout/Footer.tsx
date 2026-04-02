@@ -11,9 +11,9 @@ export default function Footer() {
     {
       title: "Solutions",
       links: [
-        { name: "Creative Writing", href: "/#features" },
-        { name: "Interactive Gaming", href: "/#features" },
-        { name: "Cinematic Narrative", href: "/#features" },
+        { name: "Creative Writing", href: "/#studio" },
+        { name: "Interactive Gaming", href: "/#studio" },
+        { name: "Cinematic Narrative", href: "/#stories" },
         { name: "Genre Explorer", href: "/#studio" },
       ],
     },
@@ -22,7 +22,7 @@ export default function Footer() {
       links: [
         { name: "Case Studies", href: "/#stories" },
         { name: "Blog", href: "/blog" },
-        { name: "AI Methodology", href: "/#features" },
+        { name: "Documentation", href: "/#studio" },
         { name: "API Docs", href: "/#studio" },
       ],
     },

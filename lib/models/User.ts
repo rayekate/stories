@@ -1,7 +1,15 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Model, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 
-const UserSchema = new mongoose.Schema(
+export interface IUser extends Document {
+  email: string;
+  password?: string;
+  name: string;
+  role: "writer" | "admin";
+  matchPassword(enteredPassword: string): Promise<boolean>;
+}
+
+const UserSchema = new Schema<IUser>(
   {
     email: {
       type: String,
@@ -12,7 +20,7 @@ const UserSchema = new mongoose.Schema(
     password: {
       type: String,
       required: [true, "Please provide a password"],
-      select: false, // Don't return password by default
+      select: false,
     },
     name: {
       type: String,
@@ -28,17 +36,19 @@ const UserSchema = new mongoose.Schema(
 );
 
 // Encrypt password before saving
-UserSchema.pre("save", function () {
+UserSchema.pre("save", async function () {
   if (!this.isModified("password")) {
     return;
   }
-  const salt = bcrypt.genSaltSync(10);
-  this.password = bcrypt.hashSync(this.password, salt);
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password as string, salt);
 });
 
 // Compare password
 UserSchema.methods.matchPassword = async function (enteredPassword: string) {
-  return await bcrypt.compare(enteredPassword, this.password);
+  return await bcrypt.compare(enteredPassword, this.password as string);
 };
 
-export default mongoose.models.User || mongoose.model("User", UserSchema);
+const User: Model<IUser> = mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
+
+export default User;

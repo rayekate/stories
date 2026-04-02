@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Shuffle, Lightbulb } from "lucide-react";
 
 const RANDOM_PROMPTS = [
@@ -32,7 +32,6 @@ interface PromptSectionProps {
 export default function PromptSection({ onPromptChange, prompt, isLoading, placeholder }: PromptSectionProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isFocused, setIsFocused] = useState(false);
-  const [showTip, setShowTip] = useState(false);
 
   const wordCount = prompt.trim() ? prompt.trim().split(/\s+/).length : 0;
   const charCount = prompt.length;

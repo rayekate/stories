@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, BookOpen, Search, X } from "lucide-react";
+import { ArrowUpRight, Search, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Blog {

@@ -1,8 +1,16 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { BookOpen, Share2, Download, Home, Sparkles } from "lucide-react";
 
-const Thumb = ({ type, active, onClick, className="" }: any) => (
+interface ThumbProps {
+  type: 'up' | 'down';
+  active: boolean;
+  onClick: () => void;
+  className?: string;
+}
+
+const Thumb = ({ type, active, onClick, className="" }: ThumbProps) => (
   <button
     onClick={onClick}
     className={`p-3 rounded-lg border transition-all duration-300 ${
@@ -194,35 +202,36 @@ export default function StoryPage({
               {/* Continuation divider — shown between segments */}
               {segIndex > 0 && (
                 <div
-                  className="flex flex-col items-center gap-4 my-16"
+                  className="flex flex-col items-center gap-6 my-20 w-full"
                   style={{
                     opacity: visible ? 1 : 0,
-                    transition: `opacity 0.8s ease 0.1s`,
+                    transition: `opacity 1s ease 0.2s`,
                   }}
                 >
-                  <div className="flex items-center gap-5 w-full">
-                    <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, transparent, hsl(350,89%,60%,0.4))" }} />
-                    <div className="flex flex-col items-center gap-1.5">
-                      <span className="text-[hsl(350,89%,60%)] text-xl">✦</span>
-                      <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/25">
-                        Continued
+                  <div className="flex items-center gap-8 w-full max-w-2xl px-4">
+                    <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-accent/40 to-accent/60" />
+                    <div className="flex flex-col items-center gap-2">
+                      <Sparkles className="text-accent w-5 h-5 animate-pulse" />
+                      <span className="text-[10px] font-black uppercase tracking-[0.5em] text-accent/60 whitespace-nowrap">
+                        TRANSITION SYNCED
                       </span>
                     </div>
-                    <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, hsl(350,89%,60%,0.4), transparent)" }} />
+                    <div className="flex-1 h-[1px] bg-gradient-to-l from-transparent via-accent/40 to-accent/60" />
                   </div>
                 </div>
               )}
 
               {/* Paragraphs in this segment */}
-              <div className="space-y-8 w-full max-w-3xl mx-auto flex flex-col items-center">
+              <div className="space-y-12 w-full max-w-3xl mx-auto flex flex-col items-center">
                 {paragraphs.map((paragraph, pIndex) => (
                   <p
                     key={pIndex}
-                    className="text-[1.15rem] md:text-[1.25rem] leading-[1.9] text-white/80 font-light text-center"
+                    className="text-[1.3rem] md:text-[1.5rem] leading-[2] text-white/90 font-medium text-center tracking-tight selection:bg-accent/30"
                     style={{
+                      fontFamily: "'Outfit', sans-serif",
                       opacity: visible ? 1 : 0,
-                      transform: visible ? "translateY(0)" : "translateY(10px)",
-                      transition: `opacity 0.7s ease ${0.15 + (segIndex * 5 + pIndex) * 0.04}s, transform 0.7s ease ${0.15 + (segIndex * 5 + pIndex) * 0.04}s`,
+                      transform: visible ? "translateY(0)" : "translateY(20px)",
+                      transition: `opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.2 + (segIndex * 3 + pIndex) * 0.05}s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.2 + (segIndex * 3 + pIndex) * 0.05}s`,
                     }}
                   >
                     {paragraph}

@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "next lint",
+    "check": "npm run lint && npx tsc --noEmit",
     "seed": "node --env-file=.env --loader ts-node/esm seed.ts"
   },
   "dependencies": {

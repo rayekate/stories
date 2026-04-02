@@ -8,6 +8,14 @@ interface RelatedPostsProps {
   genre: string;
 }
 
+interface RelatedPost {
+  title: string;
+  slug: string;
+  genre: string;
+  excerpt?: string;
+  createdAt: string;
+}
+
 async function getRelatedPosts(currentSlug: string, genre: string) {
   await connectDB();
   return await Blog.find({
@@ -25,7 +33,7 @@ export default async function RelatedPosts({
   currentSlug,
   genre,
 }: RelatedPostsProps) {
-  const posts: any[] = await getRelatedPosts(currentSlug, genre);
+  const posts: RelatedPost[] = (await getRelatedPosts(currentSlug, genre)) as unknown as RelatedPost[];
 
   if (!posts || posts.length === 0) return null;
 

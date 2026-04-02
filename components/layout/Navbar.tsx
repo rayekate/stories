@@ -12,18 +12,6 @@ export default function Navbar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const pathname = usePathname();
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-
-    // Initial session check
-    checkSession();
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   const checkSession = async () => {
     try {
       const res = await fetch("/api/auth/me");
@@ -44,9 +32,20 @@ export default function Navbar() {
     }
   };
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+
+    // Initial session check
+    checkSession();
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const navLinks = [
     { name: "Studio", href: "/#studio" },
-    { name: "Features", href: "/#features" },
     { name: "Stories", href: "/#stories" },
     { name: "Blog", href: "/blog" },
   ];
@@ -64,14 +63,16 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled ? "py-4" : "py-8"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
+        isScrolled ? "py-4" : "py-4 md:py-10"
       }`}
     >
       <div className="max-w-7xl mx-auto px-6">
         <div
-          className={`glass rounded-[24px] px-8 py-4 flex items-center justify-between transition-all duration-500 ${
-            isScrolled ? "bg-black/40 border-white/10 shadow-2xl backdrop-blur-2xl" : "bg-transparent border-transparent shadow-none"
+          className={`glass rounded-[24px] px-8 py-3.5 flex items-center justify-between transition-all duration-700 ${
+            isScrolled 
+              ? "bg-black/40 border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.8)] backdrop-blur-3xl" 
+              : "bg-transparent border-transparent shadow-none"
           }`}
         >
           {/* Logo */}
@@ -140,9 +141,8 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Mobile Menu Toggle */}
           <button
-            className="md:hidden text-white p-3 glass-card rounded-xl hover:bg-white/10 active:scale-90 transition-all z-[60]"
+            className="md:hidden text-white p-3 glass-card rounded-xl hover:bg-white/10 active:scale-90 transition-all z-[70]"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle Menu"
           >
@@ -159,9 +159,15 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute top-full left-0 right-0 p-6 md:hidden"
+            className="fixed inset-0 top-0 left-0 w-full min-h-screen bg-black/60 backdrop-blur-3xl z-50 p-6 md:hidden flex flex-col justify-center"
           >
-            <div className="glass rounded-[32px] p-10 flex flex-col gap-8 shadow-2xl border-white/10 backdrop-blur-3xl">
+            <div className="glass rounded-[32px] p-8 sm:p-12 flex flex-col gap-6 sm:gap-8 shadow-2xl border-white/10 relative max-w-lg mx-auto w-full">
+              <button 
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="absolute top-6 right-6 p-2 text-white/40 hover:text-white"
+              >
+                <X size={24} />
+              </button>
               {navLinks.map((link, idx) => (
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
