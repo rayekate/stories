@@ -9,6 +9,7 @@ import { Sparkles, Menu, X, ChevronRight } from "lucide-react";
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -16,14 +17,43 @@ export default function Navbar() {
       setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener("scroll", handleScroll);
+
+    // Initial session check
+    checkSession();
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const checkSession = async () => {
+    try {
+      const res = await fetch("/api/auth/me");
+      const data = await res.json();
+      setIsAuthenticated(data.authenticated);
+    } catch {
+      setIsAuthenticated(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      setIsAuthenticated(false);
+      window.location.href = "/";
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
 
   const navLinks = [
     { name: "Studio", href: "/#studio" },
     { name: "Features", href: "/#features" },
     { name: "Stories", href: "/#stories" },
     { name: "Blog", href: "/blog" },
+  ];
+
+  const authLinks = [
+    { name: "Dashboard", href: "/content/dashboard" },
+    { name: "New Story", href: "/content/dashboard/new" },
   ];
 
   // A link is "active" if its path matches the current pathname
@@ -49,12 +79,11 @@ export default function Navbar() {
             <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center shadow-[0_10px_20px_-5px_rgba(244,63,94,0.4)] group-hover:scale-110 transition-transform duration-500">
               <Sparkles className="text-white w-5 h-5" />
             </div>
-            <span className="text-xl font-black tracking-tighter uppercase italic group-hover:opacity-80 transition-opacity">
-              AI STORY <span className="text-accent underline decoration-accent/20 underline-offset-4">STUDIO</span>
+            <span className="text-xl font-black tracking-tighter uppercase italic group-hover:opacity-80 transition-opacity text-white">
+              SANCTUM <span className="text-accent underline decoration-accent/20 underline-offset-4 tracking-[0.2em]">AI</span>
             </span>
           </Link>
 
-          {/* Desktop Links */}
           <div className="hidden md:flex items-center gap-10">
             {navLinks.map((link) => (
               <Link
@@ -69,12 +98,45 @@ export default function Navbar() {
                 {link.name}
               </Link>
             ))}
+
+            {isAuthenticated && authLinks.map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={`relative text-[10px] font-black uppercase tracking-[0.3em] transition-all hover:translate-y-[-1px] ${
+                  isActive(link.href)
+                    ? "text-white after:absolute after:-bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:rounded-full after:bg-accent"
+                    : "text-white/40 hover:text-white font-bold"
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
+            
+            {isAuthenticated ? (
+              <button
+                onClick={handleLogout}
+                className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 hover:text-accent transition-all cursor-pointer"
+              >
+                Logout
+              </button>
+            ) : (
+              <Link
+                href="/login"
+                className={`relative text-[10px] font-black uppercase tracking-[0.3em] transition-all ${
+                  isActive("/login") ? "text-white" : "text-white/40 hover:text-white"
+                }`}
+              >
+                Login
+              </Link>
+            )}
+
             <Link
               href="/#studio"
               className="group relative bg-accent text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-[0_10px_30px_-5px_rgba(244,63,94,0.4)] hover:scale-105 active:scale-95 transition-all duration-300 overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] pointer-events-none" />
-              <span className="relative z-10">Launch Studio</span>
+              <span className="relative z-10">Enter Sanctum</span>
             </Link>
           </div>
 
@@ -114,7 +176,7 @@ export default function Navbar() {
                   >
                     <span className={`transition-colors truncate pr-4 ${
                       isActive(link.href) ? "text-accent" : "text-white group-hover:text-accent"
-                    }`}>{link.name}</span>
+                    }`}>{link.name === "Studio" ? "The Sanctum" : link.name}</span>
                     <ChevronRight className={`transition-all shrink-0 text-accent ${
                       isActive(link.href) ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0"
                     }`} size={24} />
@@ -133,7 +195,7 @@ export default function Navbar() {
                   className="group relative bg-accent text-white py-6 rounded-2xl text-center font-black uppercase tracking-[0.3em] shadow-[0_20px_50px_-10px_rgba(244,63,94,0.5)] flex items-center justify-center overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] pointer-events-none" />
-                  <span className="relative z-10">Start Creating Now</span>
+                  <span className="relative z-10">Enter The Sanctum</span>
                 </Link>
               </motion.div>
             </div>
